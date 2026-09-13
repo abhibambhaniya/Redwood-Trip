@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Redwoods Weekend — Trip Planner</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bark: #3B2E23;
+    --forest: #2C3B28;
+    --moss: #55693F;
+    --fog: #EFEAE0;
+    --paper: #F8F5EE;
+    --rust: #B5622E;
+    --line: #D9D0BC;
+    --ink: #2A2620;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background: var(--fog);
+    color: var(--ink);
+    font-family: 'Source Serif 4', serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap{
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 20px 80px;
+  }
+  header.hero{
+    background: var(--forest);
+    color: var(--paper);
+    padding: 48px 20px 36px;
+    margin-bottom: 0;
+    position: relative;
+  }
+  header.hero .hero-inner{
+    max-width: 760px;
+    margin: 0 auto;
+  }
+  .eyebrow-row{
+    display:flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: 'Source Serif 4', serif;
+    font-size: 13px;
+    color: #C9D3B9;
+    letter-spacing: 0.02em;
+    margin-bottom: 6px;
+  }
+  h1.title{
+    font-family: 'Big Shoulders Display', sans-serif;
+    font-weight: 800;
+    font-size: clamp(40px, 8vw, 64px);
+    line-height: 0.92;
+    margin: 4px 0 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+  }
+  .subtitle{
+    font-size: 17px;
+    color: #DCE3CE;
+    max-width: 46ch;
+    line-height: 1.5;
+  }
+  nav.tabs{
+    display:flex;
+    background: var(--bark);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  nav.tabs .tabs-inner{
+    max-width: 760px;
+    margin: 0 auto;
+    display:flex;
+    width:100%;
+  }
+  .tab-btn{
+    flex: 1;
+    background: none;
+    border: none;
+    color: #D8CFBE;
+    font-family: 'Big Shoulders Display', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    padding: 16px 8px;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+  }
+  .tab-btn:hover{ background: rgba(255,255,255,0.04); color: #F1EBDB; }
+  .tab-btn.active{
+    color: var(--paper);
+    border-bottom-color: var(--rust);
+    background: rgba(255,255,255,0.03);
+  }
+  main{ padding-top: 36px; }
+  section.panel{ display: none; }
+  section.panel.active{ display: block; animation: fade 0.25s ease; }
+  @keyframes fade{ from{opacity:0; transform: translateY(4px);} to{opacity:1; transform:none;} }
+
+  h2.section-title{
+    font-family: 'Big Shoulders Display', sans-serif;
+    font-weight: 800;
+    font-size: 28px;
+    text-transform: uppercase;
+    color: var(--forest);
+    letter-spacing: 0.01em;
+    margin: 0 0 4px;
+  }
+  .section-note{
+    color: #6B6355;
+    font-size: 15px;
+    margin: 0 0 28px;
+    max-width: 56ch;
+    line-height: 1.5;
+  }
+
+  /* Itinerary */
+  .day-block{ margin-bottom: 36px; }
+  .day-label{
+    font-family: 'Big Shoulders Display', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--rust);
+    text-transform: uppercase;
+    border-bottom: 2px solid var(--line);
+    padding-bottom: 8px;
+    margin-bottom: 4px;
+  }
+  .stop{
+    display: grid;
+    grid-template-columns: 84px 1fr;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .stop:last-child{ border-bottom: none; }
+  .stop-time{
+    font-family: 'Source Serif 4', serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--moss);
+    padding-top: 2px;
+  }
+  .stop-name{ font-weight: 600; font-size: 16.5px; margin-bottom: 2px; }
+  .stop-blurb{ font-size: 14.5px; color: #6B6355; line-height: 1.45; }
+
+  /* Food */
+  .food-group{ margin-bottom: 30px; }
+  .food-group h3{
+    font-family: 'Big Shoulders Display', sans-serif;
+    font-size: 18px;
+    text-transform: uppercase;
+    color: var(--moss);
+    letter-spacing: 0.02em;
+    margin: 0 0 10px;
+    border-left: 3px solid var(--rust);
+    padding-left: 10px;
+  }
+  .meal-row{
+    display:grid;
+    grid-template-columns: 110px 1fr;
+    gap: 14px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 15px;
+  }
+  .meal-row:last-child{ border-bottom: none; }
+  .meal-label{ font-weight: 600; color: var(--bark); }
+  .callout{
+    background: #FBF3E7;
+    border: 1px solid #E7D6B8;
+    border-left: 4px solid var(--rust);
+    padding: 14px 16px;
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: #5C4A32;
+    margin-top: 6px;
+  }
+  .eatout-item{ margin-bottom: 14px; }
+  .eatout-item .name{ font-weight: 600; font-size: 15.5px; }
+  .eatout-item .desc{ font-size: 14.5px; color: #6B6355; line-height: 1.5; }
+
+  /* Checklist */
+  .checklist-group{ margin-bottom: 28px; }
+  .checklist-group h3{
+    font-family: 'Big Shoulders Display', sans-serif;
+    font-size: 18px;
+    text-transform: uppercase;
+    color: var(--moss);
+    letter-spacing: 0.02em;
+    margin: 0 0 8px;
+    border-left: 3px solid var(--rust);
+    padding-left: 10px;
+  }
+  ul.check-list{ list-style:none; margin:0; padding:0; }
+  ul.check-list li{
+    display:flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 15px;
+  }
+  ul.check-list li:last-child{ border-bottom:none; }
+  ul.check-list input[type="checkbox"]{
+    margin-top: 3px;
+    width: 16px;
+    height: 16px;
+    accent-color: var(--moss);
+    flex-shrink: 0;
+  }
+  ul.check-list label{ cursor:pointer; line-height:1.4; }
+  ul.check-list input:checked + label{
+    color: #9B9284;
+    text-decoration: line-through;
+  }
+  footer{
+    text-align:center;
+    font-size: 13px;
+    color: #9B9284;
+    padding: 30px 20px 10px;
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow-row">
+      <span>BERKELEY → REDWOOD N&amp;S PARKS</span>
+      <span>3 PEOPLE · 1 NIGHT</span>
+    </div>
+    <h1 class="title">Redwoods Weekend</h1>
+    <p class="subtitle">Saturday morning out, Sunday evening back. Camp at Elk Prairie, hike Fern Canyon and Trillium Falls, and eat about half your meals at camp, half on the road.</p>
+  </div>
+</header>
+
+<nav class="tabs">
+  <div class="tabs-inner">
+    <button class="tab-btn active" data-tab="itinerary">Itinerary</button>
+    <button class="tab-btn" data-tab="food">Food</button>
+    <button class="tab-btn" data-tab="checklist">Checklist</button>
+  </div>
+</nav>
+
+<div class="wrap">
+<main>
+
+  <!-- ITINERARY -->
+  <section class="panel active" id="itinerary">
+    <h2 class="section-title">Two-Day Plan</h2>
+    <p class="section-note">A loose schedule — hikes are timed for good light and thinner crowds, with buffer built into the drive.</p>
+
+    <div class="day-block">
+      <div class="day-label">Saturday</div>
+      <div class="stop">
+        <div class="stop-time">7:00 AM</div>
+        <div><div class="stop-name">Drive Berkeley → Redwoods</div><div class="stop-blurb">6–7 hr drive north on 101.</div></div>
+      </div>
+      <div class="stop">
+        <div class="stop-time">1:30 PM</div>
+        <div><div class="stop-name">Set up camp</div><div class="stop-blurb">Check in at Elk Prairie Campground.</div></div>
+      </div>
+      <div class="stop">
+        <div class="stop-time">2:30 PM</div>
+        <div><div class="stop-name">Stout Grove (optional)</div><div class="stop-blurb">Short, flat loop if you have extra time.</div></div>
+      </div>
+      <div class="stop">
+        <div class="stop-time">5:00 PM</div>
+        <div><div class="stop-name">Fern Canyon Loop</div><div class="stop-blurb">1.1 mi, golden hour — wear waterproof shoes.</div></div>
+      </div>
+      <div class="stop">
+        <div class="stop-time">7:00 PM</div>
+        <div><div class="stop-name">Dinner at camp</div><div class="stop-blurb">Relax by the fire.</div></div>
+      </div>
+    </div>
+
+    <div class="day-block">
+      <div class="day-label">Sunday</div>
+      <div class="stop">
+        <div class="stop-time">8:30 AM</div>
+        <div><div class="stop-name">Trillium Falls Loop</div><div class="stop-blurb">2.6 mi, moderate, ~1.5–2 hrs — less crowded early.</div></div>
+      </div>
+      <div class="stop">
+        <div class="stop-time">11:00 AM</div>
+        <div><div class="stop-name">Break camp</div><div class="stop-blurb">Pack up and check out.</div></div>
+      </div>
+      <div class="stop">
+        <div class="stop-time">12:00 PM</div>
+        <div><div class="stop-name">Newton B. Drury Scenic Parkway</div><div class="stop-blurb">Scenic drive, stop at Big Tree Wayside.</div></div>
+      </div>
+      <div class="stop">
+        <div class="stop-time">1:30 PM</div>
+        <div><div class="stop-name">Klamath River Overlook</div><div class="stop-blurb">Coastal views, possible whale sightings.</div></div>
+      </div>
+      <div class="stop">
+        <div class="stop-time">2:15 PM</div>
+        <div><div class="stop-name">Lunch in Klamath or Orick</div><div class="stop-blurb">Grab food before the long drive back.</div></div>
+      </div>
+      <div class="stop">
+        <div class="stop-time">3:00 PM</div>
+        <div><div class="stop-name">Drive back to Berkeley</div><div class="stop-blurb">Arrive home evening.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOD -->
+  <section class="panel" id="food">
+    <h2 class="section-title">Food Plan</h2>
+    <p class="section-note">Vegetarian, for 3 people, split roughly 50/50 between DIY at camp and eating out.</p>
+
+    <div class="callout">
+      Orick and Klamath are food deserts — one traveler even reported no vegetarian food nearby in Klamath, requiring a drive to Crescent City. Shop before you arrive (Berkeley, Arcata, or Eureka), and treat eating out as a planned stop rather than something you'll find on the fly.
+    </div>
+
+    <div class="food-group" style="margin-top:26px;">
+      <h3>DIY at Camp</h3>
+      <div class="meal-row"><div class="meal-label">Breakfast</div><div>Oatmeal with nuts, dried fruit &amp; cinnamon — or breakfast burritos with scrambled egg/tofu, black beans, cheese &amp; salsa.</div></div>
+      <div class="meal-row"><div class="meal-label">Lunch</div><div>Pita or bread with hummus, avocado &amp; pre-washed veggies — or a cold pasta salad (olives, feta, cherry tomatoes) made ahead.</div></div>
+      <div class="meal-row"><div class="meal-label">Dinner</div><div>One-pot veggie chili, or foil-packet veggie skewers &amp; corn over the fire, or pasta with jarred marinara &amp; pre-chopped veggies.</div></div>
+      <div class="meal-row"><div class="meal-label">Snacks</div><div>Trail mix, string cheese, apples, granola bars for grazing between hikes.</div></div>
+    </div>
+
+    <div class="food-group">
+      <h3>Eat Out</h3>
+      <div class="eatout-item">
+        <div class="name">Good Harvest Café — Arcata area</div>
+        <div class="desc">Breakfast, lunch, dinner, explicit vegetarian fare, and sack lunches for the trail. Worth a stop on the drive up.</div>
+      </div>
+      <div class="eatout-item">
+        <div class="name">Historic Requa Inn — near Klamath</div>
+        <div class="desc">Good for breakfast, showcases local ingredients — more seafood-forward, so ask about vegetarian options.</div>
+      </div>
+      <div class="eatout-item">
+        <div class="name">Crescent City</div>
+        <div class="desc">Widest range of vegetarian-friendly restaurants in the area — best bet for a real sit-down dinner instead of cooking.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHECKLIST -->
+  <section class="panel" id="checklist">
+    <h2 class="section-title">Packing Checklist</h2>
+    <p class="section-note">Sized for one night, 3 people, cooking about half your meals — lighter kitchen kit than a full weekend of camp cooking.</p>
+
+    <div class="checklist-group">
+      <h3>Camp &amp; Sleep</h3>
+      <ul class="check-list">
+        <li><input type="checkbox" id="c1"><label for="c1">Tent + stakes/guylines</label></li>
+        <li><input type="checkbox" id="c2"><label for="c2">Sleeping bags (3)</label></li>
+        <li><input type="checkbox" id="c3"><label for="c3">Sleeping pads or air mattress</label></li>
+        <li><input type="checkbox" id="c4"><label for="c4">Pillows</label></li>
+        <li><input type="checkbox" id="c5"><label for="c5">Camp chairs</label></li>
+        <li><input type="checkbox" id="c6"><label for="c6">Headlamps / flashlights + batteries</label></li>
+        <li><input type="checkbox" id="c7"><label for="c7">Lantern</label></li>
+      </ul>
+    </div>
+
+    <div class="checklist-group">
+      <h3>Cooking &amp; Food (light kit — half your meals are out)</h3>
+      <ul class="check-list">
+        <li><input type="checkbox" id="c8"><label for="c8">Camp stove + fuel canister</label></li>
+        <li><input type="checkbox" id="c9"><label for="c9">One pot + one pan</label></li>
+        <li><input type="checkbox" id="c10"><label for="c10">Cooler + ice</label></li>
+        <li><input type="checkbox" id="c11"><label for="c11">Reusable plates, bowls, cups, utensils</label></li>
+        <li><input type="checkbox" id="c12"><label for="c12">Cutting board + knife</label></li>
+        <li><input type="checkbox" id="c13"><label for="c13">Matches/lighter</label></li>
+        <li><input type="checkbox" id="c14"><label for="c14">Dish soap + sponge + quick-dry towel</label></li>
+        <li><input type="checkbox" id="c15"><label for="c15">Trash bags</label></li>
+        <li><input type="checkbox" id="c16"><label for="c16">Bear-safe food storage (canister or use campground locker)</label></li>
+        <li><input type="checkbox" id="c17"><label for="c17">Groceries — bought before Orick/Klamath</label></li>
+      </ul>
+    </div>
+
+    <div class="checklist-group">
+      <h3>Clothing &amp; Personal</h3>
+      <ul class="check-list">
+        <li><input type="checkbox" id="c18"><label for="c18">Layered clothing (coastal weather shifts fast)</label></li>
+        <li><input type="checkbox" id="c19"><label for="c19">Rain jacket</label></li>
+        <li><input type="checkbox" id="c20"><label for="c20">Hiking shoes + spare socks</label></li>
+        <li><input type="checkbox" id="c21"><label for="c21">Water-friendly shoes/sandals (for Fern Canyon)</label></li>
+        <li><input type="checkbox" id="c22"><label for="c22">Warm hat + gloves for the evening</label></li>
+        <li><input type="checkbox" id="c23"><label for="c23">Toiletries</label></li>
+        <li><input type="checkbox" id="c24"><label for="c24">Towel</label></li>
+      </ul>
+    </div>
+
+    <div class="checklist-group">
+      <h3>Navigation &amp; Safety</h3>
+      <ul class="check-list">
+        <li><input type="checkbox" id="c25"><label for="c25">Offline maps downloaded (spotty cell service)</label></li>
+        <li><input type="checkbox" id="c26"><label for="c26">First aid kit</label></li>
+        <li><input type="checkbox" id="c27"><label for="c27">Campground/day-use reservation confirmations</label></li>
+        <li><input type="checkbox" id="c28"><label for="c28">Cash for park fees/parking</label></li>
+        <li><input type="checkbox" id="c29"><label for="c29">Full tank of gas before remote stretches</label></li>
+      </ul>
+    </div>
+
+    <div class="checklist-group">
+      <h3>Misc</h3>
+      <ul class="check-list">
+        <li><input type="checkbox" id="c30"><label for="c30">Daypack for hikes</label></li>
+        <li><input type="checkbox" id="c31"><label for="c31">Reusable water bottles</label></li>
+        <li><input type="checkbox" id="c32"><label for="c32">Sunscreen + bug spray</label></li>
+        <li><input type="checkbox" id="c33"><label for="c33">Camera/phone charger + power bank</label></li>
+        <li><input type="checkbox" id="c34"><label for="c34">Firewood (or buy locally — don't transport in)</label></li>
+      </ul>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<footer>Redwood National &amp; State Parks · Sep 2026</footer>
+
+<script>
+  const tabs = document.querySelectorAll('.tab-btn');
+  const panels = document.querySelectorAll('.panel');
+  tabs.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabs.forEach(b => b.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+    });
+  });
+</script>
+
+</body>
+</html>
